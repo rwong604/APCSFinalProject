@@ -6,6 +6,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class Obstacle {
@@ -19,7 +20,7 @@ public class Obstacle {
 	private double sceneHeight;
 	private double sceneWidth;
 	private boolean bound = true;
-
+//	Rectangle test = new Rectangle(bottom.getX(),bottom.getY()-gap,pipeWidth,gap);
 	
 	public Obstacle(String n1, String n2, double gap) {
 		String url = getClass().getResource(n1).toString();
@@ -60,7 +61,7 @@ public class Obstacle {
 	}
 	
 	public void random() {
-		this.bottom.setLayoutY(sceneHeight*0.9 - (int) (Math.random()*200)-50);
+		this.bottom.setLayoutY(sceneHeight*0.9 - (int) (Math.random()*200)-50); //(random * range of heights) - min height
 		this.top.setLayoutY(bottom.getLayoutY() - pipeHeight - gap);
 
 	}
@@ -97,6 +98,12 @@ public class Obstacle {
 	public void stop() {
 		transTransition.stop();
 		TransTransition.stop();
+	}
+
+	public void playFromStart() {
+		transTransition.playFromStart();
+		TransTransition.playFromStart();
+		
 	}
 	
 	
