@@ -14,12 +14,13 @@ public class Obstacle {
 	private ImageView top = null;
 	private TranslateTransition transTransition;
 	private TranslateTransition TransTransition;
-	private int a = -1;
+	private double gap = 150;
+//	private int a = -1;
 	private int clicks = 0;
 	private double sceneHeight;
 	private double sceneWidth;
 	private boolean bound = true;
-
+	
 	
 	public Obstacle(String n1, String n2) {
 		String url = getClass().getResource(n1).toString();
@@ -29,13 +30,13 @@ public class Obstacle {
 		
 	}
 	
-	public void movingGround(double sceneHeight, double sceneWidth){
-		this.sceneHeight = sceneHeight;
-		this.sceneWidth = sceneWidth;
+	public void movingGround(double height, double width){
+		this.sceneHeight = height;
+		this.sceneWidth = width;
 		this.bottom.setLayoutX(425);
 		this.bottom.setLayoutY(sceneHeight*0.9 - 100);
 		this.top.setLayoutX(425);
-		this.top.setLayoutY(bottom.getLayoutY() - 450);
+		this.top.setLayoutY(bottom.getLayoutY() - 320 - gap); //layout - pipeHeight - gap
 		transTransition = new TranslateTransition(new Duration(2500), this.bottom);
 		TransTransition  = new TranslateTransition(new Duration(2500), this.top);
 		TransTransition.setToX(-sceneWidth - 75);
@@ -61,12 +62,14 @@ public class Obstacle {
 	}
 	
 	public void random() {
-		this.bottom.setLayoutY(sceneHeight*0.9 - (100 +  a *((double) Math.random() * 100)));
-		if(clicks % 2 == 0) {
-			a *= -1;
-		}
-		clicks++;
-		this.top.setLayoutY(bottom.getLayoutY() - 450);
+		this.bottom.setLayoutY(sceneHeight*0.9 - (Math.random() * 170 +30)); // random * range + minimum
+
+//		this.bottom.setLayoutY(sceneHeight*0.9 - (100 +  a *((double) Math.random() * 100)));
+//		if(clicks % 2 == 0) {
+//			a *= -1;
+//		}
+//		clicks++;
+		this.top.setLayoutY(bottom.getLayoutY() - 320 - gap); //layout - pipeHeight - gap
 
 	}
 	
@@ -79,11 +82,11 @@ public class Obstacle {
 	}
 	
 	public double getX1() {
-		return bottom.layoutXProperty().doubleValue() + bottom.getTranslateX() + bottom.xProperty().doubleValue();
+		return bottom.layoutXProperty().doubleValue() + bottom.getTranslateX(); // + bottom.xProperty().doubleValue();
 	}
 	
 	public double getX2() {
-		return top.layoutXProperty().doubleValue() + top.getTranslateX() + top.xProperty().doubleValue();
+		return top.layoutXProperty().doubleValue() + top.getTranslateX();// + top.xProperty().doubleValue();
 	}
 	
 	public double getY1() {

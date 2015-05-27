@@ -58,6 +58,34 @@ public class Main extends Application {
 	private double calcTime(double distance, double velocity){
 		return ((-velocity+Math.sqrt(velocity*velocity+(2*g*distance)))/g);
 	}
+
+
+	private void addMouseEventHandler(){
+		root.onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
+			int n=0;
+			@Override
+			public void handle(MouseEvent event) {
+				n++;
+				if (n==1){
+					root.getChildren().remove(clickRun);
+					root.getChildren().addAll(instruct,getReady);
+					ground.play();
+				}
+				else{
+					root.getChildren().removeAll(instruct,getReady);
+					if(timeline!=null){
+						timeline.stop();
+					}
+					if(!endGame){
+						pipe.play();
+						flappyFly(boostV, interpolator);
+					}
+				}
+			}
+		});
+	}
+	
+	
 	private void checkLocation(){
 		double threshold = 8;
 		if(flappy.getY()>=max_y-threshold || flappy.intersects(pipe.getX1(), pipe.getY1(), 52, 320) 
@@ -71,13 +99,11 @@ public class Main extends Application {
 		interpolator = new Interpolator(){
 			@Override
 			protected double curve (double t){
-				checkLocation();
-				
+				checkLocation();				
 				text = new Text(Integer.toString(score));
 				text.setLayoutX(20);
 				text.setLayoutY(50);
-			    text.setFont(Font.font ("Verdana", 36));
-			    
+			    text.setFont(Font.font ("Verdana", 36));		    
 			    root.getChildren().remove(scores);
 			    scores.getChildren().clear();
 			    scores.getChildren().add(text);
@@ -89,6 +115,7 @@ public class Main extends Application {
 				}
 				if(endGame) {
 					animationStop();
+					flappyFly(0, Interpolator.LINEAR); //free fall to max_y
 				}
 				double time = t * duration;
 				double distance = (v*time)+(0.5*g*time*time);	
@@ -96,14 +123,25 @@ public class Main extends Application {
 			}
 		};
 	}
-
+	
+	public void flappyFly(double velocity, Interpolator i){
+			range = max_y-flappy.getY();
+			v=velocity;	
+			duration = calcTime(range,v);
+			timeline = new Timeline();
+			KeyValue kv = new KeyValue(flappy.yProperty(),max_y,i);
+			final KeyFrame kf = new KeyFrame(Duration.millis(duration * 1000), kv);	
+			timeline.getKeyFrames().add(kf);
+			timeline.play();
+	}
+	
 	public void animationStop() {
 			timeline.stop();
 			ground.stop();
 			pipe.stop();
 			root.getChildren().add(gameOver);
 			button = new Button("Restart");
-			button.setLayoutX(20);
+			button.setLayoutX(320);
 			button.setLayoutY(20);
 			root.getChildren().add(button);
 			addActionEventHandler();
@@ -137,39 +175,6 @@ public class Main extends Application {
         }
         Runtime.getRuntime().exec(command.toString());
         System.exit(0);
-	}
-
-
-	private void addMouseEventHandler(){
-		root.onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
-			int n=0;
-			@Override
-			public void handle(MouseEvent event) {
-				n++;
-				if (n==1){
-					root.getChildren().remove(clickRun);
-					root.getChildren().addAll(instruct,getReady);
-				}
-				else{
-					root.getChildren().removeAll(instruct,getReady);
-					if(timeline!=null){
-						timeline.stop();
-					}
-					if(!endGame){
-						ground.play();
-						pipe.play();
-						range = max_y-flappy.getY();
-						v=boostV;	
-						duration = calcTime(range,boostV);
-						timeline = new Timeline();
-						KeyValue kv = new KeyValue(flappy.yProperty(),max_y, interpolator);
-						final KeyFrame kf = new KeyFrame(Duration.millis(duration * 1000), kv);	
-						timeline.getKeyFrames().add(kf);
-						timeline.play();
-					}
-				}
-			}
-		});
 	}
 	
 	
