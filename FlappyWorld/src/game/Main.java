@@ -32,7 +32,7 @@ public class Main extends Application {
 
 
 	private Ground ground = null;
-	private Obstacle pipe = new Obstacle("/obstacle_bottom.png", "/obstacle_top.png");
+	private Obstacle pipe = new Obstacle("/obstacle_bottom.png", "/obstacle_top.png", 105);
 	private String url = getClass().getResource("/flappy.png").toString();
 
 	protected static int score = 0;

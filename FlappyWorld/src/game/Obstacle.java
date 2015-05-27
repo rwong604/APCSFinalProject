@@ -9,7 +9,9 @@ import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
 public class Obstacle {
-
+	final private double pipeHeight = 320;
+	final private double pipeWidth = 52;
+	private double gap;
 	private ImageView bottom = null;
 	private ImageView top = null;
 	private TranslateTransition transTransition;
@@ -19,12 +21,12 @@ public class Obstacle {
 	private boolean bound = true;
 
 	
-	public Obstacle(String n1, String n2) {
+	public Obstacle(String n1, String n2, double gap) {
 		String url = getClass().getResource(n1).toString();
 		this.bottom = new ImageView(url);
 		url = getClass().getResource(n2).toString();
 		this.top = new ImageView(url);
-		
+		this.gap = gap;
 	}
 	
 	public void movingGround(double sceneHeight, double sceneWidth){
@@ -33,7 +35,7 @@ public class Obstacle {
 		this.bottom.setLayoutX(425);
 		this.bottom.setLayoutY(sceneHeight*0.9 - 100);
 		this.top.setLayoutX(425);
-		this.top.setLayoutY(bottom.getLayoutY() - 450);
+		this.top.setLayoutY(bottom.getLayoutY() - pipeHeight - gap);
 		transTransition = new TranslateTransition(new Duration(2500), this.bottom);
 		TransTransition  = new TranslateTransition(new Duration(2500), this.top);
 		TransTransition.setToX(-sceneWidth - 75);
@@ -58,8 +60,8 @@ public class Obstacle {
 	}
 	
 	public void random() {
-		this.bottom.setLayoutY(sceneHeight*0.9 - (100 + ((double) Math.random() * 100)));
-		this.top.setLayoutY(bottom.getLayoutY() - 450);
+		this.bottom.setLayoutY(sceneHeight*0.9 - (int) (Math.random()*200)-50);
+		this.top.setLayoutY(bottom.getLayoutY() - pipeHeight - gap);
 
 	}
 	
