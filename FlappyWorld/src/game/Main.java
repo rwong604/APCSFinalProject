@@ -2,6 +2,8 @@ package game;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Map;
+
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -23,15 +25,18 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Main extends Application {
-
+	private Text text = null;
+	private static String[] Args;
+	private Group scores;
+	public Media m;
+	private MediaPlayer Player;
+	
 	protected static Group root = null;
 	private ImageView bkgrd = null ;
 	private ImageView flappy = null;
 	private Button reset;
 	private Button level;
-	private Text text = null;
-	private static String[] Args;
-	private Group scores;
+
 	private ImageView clickRun = new ImageView("clickrun.png");
 	private ImageView instruct = new ImageView("instructions.png");
 	private ImageView getReady = new ImageView("getready.png");
@@ -41,8 +46,8 @@ public class Main extends Application {
 	private Obstacle pipe = null;
 	private String url = getClass().getResource("/flappy.png").toString();
 	private String URL = getClass().getResource("/flap.mp3").toString();
-	private Media m = new Media(URL);
-	private MediaPlayer player = new MediaPlayer(m);
+//	private Media m = new Media(URL);
+//	private MediaPlayer player = new MediaPlayer(m);
 
 	protected static int score = 0;
 	static int n=0;
@@ -92,6 +97,9 @@ public class Main extends Application {
 						timeline.stop();
 					}
 					if(!endGame){
+						String URL = getClass().getResource("/flap.mp3").toString();
+						Media m = new Media(URL);
+						MediaPlayer player = new MediaPlayer(m);
 						player.play();
 						pipe.play();
 						flappyFly(boostV, interpolator);
@@ -250,8 +258,8 @@ public class Main extends Application {
 		
 	    //Background music
 		String URl = getClass().getResource("/backgroundmusic.mp3").toString();
-		Media m = new Media(URl);
-		MediaPlayer Player = new MediaPlayer(m);
+		m = new Media(URl);
+		Player = new MediaPlayer(m);
 		Player.setCycleCount(MediaPlayer.INDEFINITE);
 		Player.play();
 		
