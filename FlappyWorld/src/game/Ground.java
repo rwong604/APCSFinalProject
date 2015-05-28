@@ -18,7 +18,12 @@ public class Ground {
 	}
 	
 	public void movingGround(double sceneHeight, double sceneWidth){
-		transTransition = new TranslateTransition(new Duration(2000), this.ground);
+		if(Main.masterLevel){
+			transTransition = new TranslateTransition(new Duration(1900), this.ground);
+		}else{
+			transTransition = new TranslateTransition(new Duration(2500), this.ground);
+
+		}
 		this.ground.setLayoutX(0);
 		this.ground.setLayoutY(sceneHeight*0.9);
 		this.ground.setFitWidth(sceneWidth*2);

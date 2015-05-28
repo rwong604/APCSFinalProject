@@ -27,7 +27,8 @@ public class Main extends Application {
 	protected static Group root = null;
 	private ImageView bkgrd = null ;
 	private ImageView flappy = null;
-	private Button button;
+	private Button reset;
+	private Button level;
 	private Text text = null;
 	private static String[] Args;
 	private Group scores;
@@ -58,7 +59,8 @@ public class Main extends Application {
 	static Interpolator interpolator;
 
 	static boolean endGame;
-
+	static boolean masterLevel;
+	
 	private double calcTime(double distance, double velocity){
 		return ((-velocity+Math.sqrt(velocity*velocity+(2*g*distance)))/g);
 	}
@@ -78,8 +80,10 @@ public class Main extends Application {
 			public void handle(MouseEvent event) {
 				n++;
 				if (n==1){
-					root.getChildren().remove(clickRun);
-					root.getChildren().addAll(instruct,getReady);
+					root.getChildren().removeAll(clickRun,level);
+					ground.movingGround(sceneHeight, sceneWidth);
+					pipe.movingGround(sceneHeight, sceneWidth);
+					root.getChildren().addAll(instruct,getReady,ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
 					ground.play();
 				}
 				else{
@@ -142,15 +146,15 @@ public class Main extends Application {
 			ground.stop();
 			pipe.stop();
 			root.getChildren().add(gameOver);
-			button = new Button("Restart");
-			button.setLayoutX(150);
-			button.setLayoutY(150);
-			root.getChildren().add(button);
+			reset = new Button("Restart");
+			reset.setLayoutX(150);
+			reset.setLayoutY(150);
+			root.getChildren().add(reset);
 			addActionEventHandler();
 	}
 	
 	public void addActionEventHandler() {
-		 button.setOnAction(new EventHandler<ActionEvent>() {
+		 reset.setOnAction(new EventHandler<ActionEvent>() {
 	            @Override
 	            public void handle(ActionEvent event) {
 	                try {
@@ -164,13 +168,15 @@ public class Main extends Application {
 	}
 	
 	public void restartApplication() throws IOException {
-		root.getChildren().removeAll(scores, gameOver, button, flappy, ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
+		root.getChildren().removeAll(scores, gameOver, reset, flappy,
+				ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
 		endGame = false;
+		masterLevel=false;
 		n=0;
 		score = 0;
 		reset();
 		initialize();
-		root.getChildren().addAll(clickRun,flappy, ground.getImageView(), pipe.getImageView1(), pipe.getImageView2(), scores);
+		root.getChildren().addAll(clickRun,flappy, scores, level);
 //		StringBuilder command = new StringBuilder();
 //        command.append(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java ");
 //        for (String jvmArg : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
@@ -188,9 +194,8 @@ public class Main extends Application {
 	public void initialize(){
 		text = new Text(Integer.toString(score));
 		ground = new Ground("/ground.png");
-		ground.movingGround(sceneHeight, sceneWidth);
 		pipe = new Obstacle("/obstacle_bottom.png", "/obstacle_top.png");
-		pipe.movingGround(sceneHeight, sceneWidth);
+
 
 		flappy = new ImageView(url);
 		flappy.preserveRatioProperty().set(true);
@@ -198,6 +203,7 @@ public class Main extends Application {
 		flappy.yProperty().set(start_y);
 
 		interpolator();
+		masterLevel();
 		
 		scores = new Group();
 		scores.getChildren().add(text);
@@ -211,6 +217,17 @@ public class Main extends Application {
 		flappy = null;
 		timeline = null;
 		interpolator = null;
+		level.disableProperty().set(false);
+	}
+	
+	public void masterLevel() {
+		 level.setOnAction(new EventHandler<ActionEvent>() {
+	            @Override
+	            public void handle(ActionEvent event) {
+	               masterLevel = true;
+	               level.disableProperty().set(true);
+	            }
+	        });
 	}
 	
 	@Override
@@ -218,6 +235,10 @@ public class Main extends Application {
 		//TODO 1: add background
 
 		bkgrd = new ImageView("background2.png");
+		level = new Button("Master Level");
+		
+		level.setLayoutX(sceneWidth/2.5);
+		level.setLayoutY(sceneHeight/1.5);
 		clickRun.setLayoutX(sceneWidth/5.5);
 		clickRun.setLayoutY(sceneHeight/5);
 		getReady.setLayoutX(sceneWidth/4);
@@ -238,8 +259,8 @@ public class Main extends Application {
 		
 		//Create a Group 
 		root = new Group( );
-		root.getChildren().addAll(bkgrd, clickRun, flappy, scores,
-				ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
+		root.getChildren().addAll(bkgrd, clickRun, flappy, scores, level
+			);
 
 		//TODO 5: add mouse handler to the scene
 		addMouseEventHandler();
