@@ -37,14 +37,14 @@ public class Main extends Application {
 	private ImageView gameOver = new ImageView("gameover.png");
 
 	private Ground ground = null;
-	private Obstacle pipe = new Obstacle("/obstacle_bottom.png", "/obstacle_top.png");
+	private Obstacle pipe = null;
 	private String url = getClass().getResource("/flappy.png").toString();
 	private String URL = getClass().getResource("/flap.mp3").toString();
 	private Media m = new Media(URL);
 	private MediaPlayer player = new MediaPlayer(m);
 
 	protected static int score = 0;
-	
+	static int n=0;
 	static double g = 300;
 	static final double boostV = -150;
 	static final double sceneWidth=400;
@@ -72,6 +72,42 @@ public class Main extends Application {
 		}
 	}
 	
+	private void addMouseEventHandler(){
+		root.onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				n++;
+				if (n==1){
+					root.getChildren().remove(clickRun);
+					root.getChildren().addAll(instruct,getReady);
+					ground.play();
+				}
+				else{
+					root.getChildren().removeAll(instruct,getReady);
+					if(timeline!=null){
+						timeline.stop();
+					}
+					if(!endGame){
+						player.play();
+						pipe.play();
+						flappyFly(boostV, interpolator);
+					}
+				}
+			}
+		});
+	}
+	
+	public void flappyFly(double velocity, Interpolator i){
+					range = max_y-flappy.getY();
+					v=velocity;	
+					duration = calcTime(range,v);
+					timeline = new Timeline();
+					KeyValue kv = new KeyValue(flappy.yProperty(),max_y,i);
+					final KeyFrame kf = new KeyFrame(Duration.millis(duration * 1000), kv);	
+					timeline.getKeyFrames().add(kf);
+					timeline.play();
+			}
+	
 	private void interpolator(){
 		interpolator = new Interpolator(){
 			@Override
@@ -85,11 +121,11 @@ public class Main extends Application {
 			    scores.getChildren().clear();
 			    scores.getChildren().add(text);
 				root.getChildren().add(scores);
-				if (flappy.getY()<=10 && endGame){ //if hits top, go to free fall
-					range=max_y-flappy.getY();
-					v=0;
-					duration = calcTime(range,v);
-				}
+//				if (flappy.getY()<=10 && endGame){ //if hits top, go to free fall
+//					range=max_y-flappy.getY();
+//					v=0;
+//					duration = calcTime(range,v);
+//				}
 				if(endGame) {
 					animationStop();
 					flappyFly(0, Interpolator.LINEAR); 
@@ -128,62 +164,59 @@ public class Main extends Application {
 	}
 	
 	public void restartApplication() throws IOException {
-		StringBuilder command = new StringBuilder();
-        command.append(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java ");
-        for (String jvmArg : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
-            command.append(jvmArg + " ");
-        }
-        command.append("-cp ").append(ManagementFactory.getRuntimeMXBean().getClassPath()).append(" ");
-        command.append(Main.class.getName()).append(" ");
-        for (String arg : Args) {
-            command.append(arg).append(" ");
-        }
-        Runtime.getRuntime().exec(command.toString());
-        System.exit(0);
+		root.getChildren().removeAll(scores, gameOver, button, flappy, ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
+		endGame = false;
+		n=0;
+		score = 0;
+		reset();
+		initialize();
+		root.getChildren().addAll(clickRun,flappy, ground.getImageView(), pipe.getImageView1(), pipe.getImageView2(), scores);
+//		StringBuilder command = new StringBuilder();
+//        command.append(System.getProperty("java.home") + File.separator + "bin" + File.separator + "java ");
+//        for (String jvmArg : ManagementFactory.getRuntimeMXBean().getInputArguments()) {
+//            command.append(jvmArg + " ");
+//        }
+//        command.append("-cp ").append(ManagementFactory.getRuntimeMXBean().getClassPath()).append(" ");
+//        command.append(Main.class.getName()).append(" ");
+//        for (String arg : Args) {
+//            command.append(arg).append(" ");
+//        }
+//        Runtime.getRuntime().exec(command.toString());
+//        System.exit(0);
+	}
+
+	public void initialize(){
+		text = new Text(Integer.toString(score));
+		ground = new Ground("/ground.png");
+		ground.movingGround(sceneHeight, sceneWidth);
+		pipe = new Obstacle("/obstacle_bottom.png", "/obstacle_top.png");
+		pipe.movingGround(sceneHeight, sceneWidth);
+
+		flappy = new ImageView(url);
+		flappy.preserveRatioProperty().set(true);
+		flappy.xProperty().set(start_x);
+		flappy.yProperty().set(start_y);
+
+		interpolator();
+		
+		scores = new Group();
+		scores.getChildren().add(text);
+
 	}
 	
-	public void flappyFly(double velocity, Interpolator i){
-					range = max_y-flappy.getY();
-					v=velocity;	
-					duration = calcTime(range,v);
-					timeline = new Timeline();
-					KeyValue kv = new KeyValue(flappy.yProperty(),max_y,i);
-					final KeyFrame kf = new KeyFrame(Duration.millis(duration * 1000), kv);	
-					timeline.getKeyFrames().add(kf);
-					timeline.play();
-			}
+	public void reset(){
+		text = null;
+		ground = null;
+		pipe = null;
+		flappy = null;
+		timeline = null;
+		interpolator = null;
+	}
 	
-	private void addMouseEventHandler(){
-				root.onMouseClickedProperty().set(new EventHandler<MouseEvent>() {
-					int n=0;
-					@Override
-					public void handle(MouseEvent event) {
-						n++;
-						if (n==1){
-							root.getChildren().remove(clickRun);
-							root.getChildren().addAll(instruct,getReady);
-							ground.play();
-						}
-						else{
-							root.getChildren().removeAll(instruct,getReady);
-							if(timeline!=null){
-								timeline.stop();
-							}
-							if(!endGame){
-								player.play();
-								pipe.play();
-								flappyFly(boostV, interpolator);
-							}
-						}
-					}
-				});
-			}
-
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//TODO 1: add background
-		ground = new Ground("/ground.png");
-		ground.movingGround(sceneHeight, sceneWidth);
+
 		bkgrd = new ImageView("background2.png");
 		clickRun.setLayoutX(sceneWidth/5.5);
 		clickRun.setLayoutY(sceneHeight/5);
@@ -193,37 +226,23 @@ public class Main extends Application {
 		instruct.setLayoutY(sceneHeight/2);
 		gameOver.setLayoutX(sceneWidth/5);
 		gameOver.setLayoutY(sceneHeight/5);
-		text = new Text(Integer.toString(score));
-
+		
 	    //Background music
 		String URl = getClass().getResource("/backgroundmusic.mp3").toString();
 		Media m = new Media(URl);
 		MediaPlayer Player = new MediaPlayer(m);
 		Player.setCycleCount(MediaPlayer.INDEFINITE);
 		Player.play();
-
-
-		//TODO 2: add Flappy
-		flappy = new ImageView(url);
-		flappy.preserveRatioProperty().set(true);
-		flappy.xProperty().set(start_x);
-		flappy.yProperty().set(start_y);
-
-
+		
+		initialize();
+		
 		//Create a Group 
 		root = new Group( );
-		scores = new Group();
-		root.getChildren().addAll(bkgrd, clickRun);
-		root.getChildren().addAll(ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
-		root.getChildren().add(flappy);
-		scores.getChildren().add(text);
-		root.getChildren().add(scores);
+		root.getChildren().addAll(bkgrd, clickRun, flappy, scores,
+				ground.getImageView(), pipe.getImageView1(), pipe.getImageView2());
 
 		//TODO 5: add mouse handler to the scene
 		addMouseEventHandler();
-		interpolator();
-		pipe.movingGround(sceneHeight, sceneWidth);
-
 
 		//Create scene and add to stage
 		Scene scene = new Scene(root, sceneWidth, sceneHeight);

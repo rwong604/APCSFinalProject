@@ -14,7 +14,7 @@ public class Obstacle {
 	private ImageView top = null;
 	private TranslateTransition transTransition;
 	private TranslateTransition TransTransition;
-	private double gap = 130; //distance between the two pipes 
+	private double gap = 120; //distance between the two pipes 
 	private int a = -1;
 	private int clicks = 0;
 	private double sceneHeight;
@@ -62,7 +62,7 @@ public class Obstacle {
 	}
 	
 	public void random() {
-		this.bottom.setLayoutY(sceneHeight*0.9 - (50 +  a *((double) Math.random() * 150))); // random * range + minimum
+		this.bottom.setLayoutY(sceneHeight*0.9 - (100 +  a *((double) Math.random() * 100))); // random * range + minimum
 		if(clicks % 2 == 0) {
 			a *= -1;
 		}
@@ -99,12 +99,11 @@ public class Obstacle {
 		TransTransition.play();
 		transTransition.play();
 	}
-	
+
 	public void stop() {
 		transTransition.stop();
 		TransTransition.stop();
 	}
-	
 	
 }
 
