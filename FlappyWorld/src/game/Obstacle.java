@@ -6,37 +6,37 @@ import javafx.animation.Interpolator;
 import javafx.animation.Timeline;
 import javafx.animation.TranslateTransition;
 import javafx.scene.image.ImageView;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class Obstacle {
-
+	final private double pipeHeight = 320;
+	final private double pipeWidth = 52;
+	private double gap;
 	private ImageView bottom = null;
 	private ImageView top = null;
 	private TranslateTransition transTransition;
 	private TranslateTransition TransTransition;
-	private double gap = 130; //distance between the two pipes 
-	private int a = -1;
-	private int clicks = 0;
 	private double sceneHeight;
 	private double sceneWidth;
 	private boolean bound = true;
-
+//	Rectangle test = new Rectangle(bottom.getX(),bottom.getY()-gap,pipeWidth,gap);
 	
-	public Obstacle(String n1, String n2) {
+	public Obstacle(String n1, String n2, double gap) {
 		String url = getClass().getResource(n1).toString();
 		this.bottom = new ImageView(url);
 		url = getClass().getResource(n2).toString();
 		this.top = new ImageView(url);
-		
+		this.gap = gap;
 	}
 	
-	public void movingGround(double height, double width){
-		this.sceneHeight = height;
-		this.sceneWidth = width;
+	public void movingGround(double sceneHeight, double sceneWidth){
+		this.sceneHeight = sceneHeight;
+		this.sceneWidth = sceneWidth;
 		this.bottom.setLayoutX(425);
 		this.bottom.setLayoutY(sceneHeight*0.9 - 100);
 		this.top.setLayoutX(425);
-		this.top.setLayoutY(bottom.getLayoutY() - 320 - gap); //bottomY - pipe height - gap
+		this.top.setLayoutY(bottom.getLayoutY() - pipeHeight - gap);
 		transTransition = new TranslateTransition(new Duration(2500), this.bottom);
 		TransTransition  = new TranslateTransition(new Duration(2500), this.top);
 		TransTransition.setToX(-sceneWidth - 75);
@@ -47,8 +47,7 @@ public class Obstacle {
 					bound = true;
 					random();
 				}
-//				System.out.println(t);
-				if(t >= .6 && bound && t != 1) {
+				if(t >= .7 && bound) {
 					bound = false;
 					Main.score += 1;
 				}
@@ -62,12 +61,8 @@ public class Obstacle {
 	}
 	
 	public void random() {
-		this.bottom.setLayoutY(sceneHeight*0.9 - (50 +  a *((double) Math.random() * 150))); // random * range + minimum
-		if(clicks % 2 == 0) {
-			a *= -1;
-		}
-		clicks++;
-		this.top.setLayoutY(bottom.getLayoutY() - 320 - gap); //bottomY - pipe height - gap
+		this.bottom.setLayoutY(sceneHeight*0.9 - (int) (Math.random()*200)-50); //(random * range of heights) - min height
+		this.top.setLayoutY(bottom.getLayoutY() - pipeHeight - gap);
 
 	}
 	
@@ -80,11 +75,11 @@ public class Obstacle {
 	}
 	
 	public double getX1() {
-		return bottom.layoutXProperty().doubleValue() + bottom.getTranslateX(); // + bottom.xProperty().doubleValue();
+		return bottom.layoutXProperty().doubleValue() + bottom.getTranslateX() + bottom.xProperty().doubleValue();
 	}
 	
 	public double getX2() {
-		return top.layoutXProperty().doubleValue() + top.getTranslateX();// + top.xProperty().doubleValue();
+		return top.layoutXProperty().doubleValue() + top.getTranslateX() + top.xProperty().doubleValue();
 	}
 	
 	public double getY1() {
@@ -103,6 +98,12 @@ public class Obstacle {
 	public void stop() {
 		transTransition.stop();
 		TransTransition.stop();
+	}
+
+	public void playFromStart() {
+		transTransition.playFromStart();
+		TransTransition.playFromStart();
+		
 	}
 	
 	

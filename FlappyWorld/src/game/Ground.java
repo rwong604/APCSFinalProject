@@ -38,4 +38,8 @@ public class Ground {
 	public void stop() {
 		transTransition.stop();
 	}
+
+	public void playFromStart() {
+		transTransition.playFromStart();		
+	}
 }
