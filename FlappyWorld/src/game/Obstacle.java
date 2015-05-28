@@ -14,6 +14,7 @@ public class Obstacle {
 	private ImageView top = null;
 	private TranslateTransition transTransition;
 	private TranslateTransition TransTransition;
+	private double gap = 130; //distance between the two pipes 
 	private int a = -1;
 	private int clicks = 0;
 	private double sceneHeight;
@@ -29,13 +30,13 @@ public class Obstacle {
 		
 	}
 	
-	public void movingGround(double sceneHeight, double sceneWidth){
-		this.sceneHeight = sceneHeight;
-		this.sceneWidth = sceneWidth;
+	public void movingGround(double height, double width){
+		this.sceneHeight = height;
+		this.sceneWidth = width;
 		this.bottom.setLayoutX(425);
 		this.bottom.setLayoutY(sceneHeight*0.9 - 100);
 		this.top.setLayoutX(425);
-		this.top.setLayoutY(bottom.getLayoutY() - 450);
+		this.top.setLayoutY(bottom.getLayoutY() - 320 - gap); //bottomY - pipe height - gap
 		transTransition = new TranslateTransition(new Duration(2500), this.bottom);
 		TransTransition  = new TranslateTransition(new Duration(2500), this.top);
 		TransTransition.setToX(-sceneWidth - 75);
@@ -61,12 +62,12 @@ public class Obstacle {
 	}
 	
 	public void random() {
-		this.bottom.setLayoutY(sceneHeight*0.9 - (100 +  a *((double) Math.random() * 100)));
+		this.bottom.setLayoutY(sceneHeight*0.9 - (50 +  a *((double) Math.random() * 150))); // random * range + minimum
 		if(clicks % 2 == 0) {
 			a *= -1;
 		}
 		clicks++;
-		this.top.setLayoutY(bottom.getLayoutY() - 450);
+		this.top.setLayoutY(bottom.getLayoutY() - 320 - gap); //bottomY - pipe height - gap
 
 	}
 	
